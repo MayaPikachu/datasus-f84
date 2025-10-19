@@ -1,0 +1,5 @@
+Análises estatísticas básicas
+Ex: Dashboards em R mostrando as migrações, média de distância, etc
+Gráficos para quantidades de homens e mulheres, para situação de rua, uso de drogas, idade, estado, cidade, cor, permanência, procedimentos, qual ano teve mais gente iniciando e terminando tratamento, quais municípios têm mais autistas sendo tratados, etc
+Talvez dividir por ano, e fazer tanto por pacientes quanto por atendimentos
+Fazer porcentagens, números absolutos, CIDs associadas mais comuns, comparação entre números por ano e mês
