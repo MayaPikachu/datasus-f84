@@ -940,6 +940,7 @@ output$plot_etnia_brasil <- renderPlot({
   output$plot_idade <- renderPlot({
     dados <- dados_demografia() %>%
       mutate(
+        IDADEPAC = as.numeric(IDADEPAC),
         faixa_idade = case_when(
           IDADEPAC < 5  ~ "0-4",
           IDADEPAC < 10 ~ "5-9",
@@ -1150,7 +1151,8 @@ output$plot_etnia_brasil <- renderPlot({
   ##### Tabela estadual #####
   output$tabela_estado <- renderDT({
     
-    dados <- dados_estado()  # pacientes ou atendimentos filtrados
+    dados <- dados_estado() %>%
+      mutate(IDADEPAC = pmax(IDADEPAC, 1, na.rm = TRUE))  # pacientes ou atendimentos filtrados
     
     tabela <- dados %>%
       group_by(uf) %>%
@@ -1178,6 +1180,7 @@ output$plot_etnia_brasil <- renderPlot({
         `Total de atendimentos` = total_atendimentos,
         `Total de pacientes` = total_pacientes,
         `Média de atendimentos por paciente` = media_atendimentos_por_paciente,
+        `Média da idade dos pacientes` = media_idade,
         Homens = homens,
         Mulheres = mulheres,
         Branca = branca,
@@ -1203,7 +1206,8 @@ output$plot_etnia_brasil <- renderPlot({
   ##### Tabela Municipal #####
   output$tabela_municipio <- renderDT({
     
-    dados <- dados_municipio()  # pacientes ou atendimentos filtrados
+    dados <- dados_municipio() %>%
+      mutate(IDADEPAC = pmax(IDADEPAC, 1, na.rm = TRUE))  # pacientes ou atendimentos filtrados
     
     tabela <- dados %>%
       group_by(UFMUN) %>%
@@ -1232,6 +1236,7 @@ output$plot_etnia_brasil <- renderPlot({
         `Total de atendimentos` = total_atendimentos,
         `Total de pacientes` = total_pacientes,
         `Média de atendimentos por paciente` = media_atendimentos_por_paciente,
+        `Média da idade dos pacientes` = media_idade,
         Homens = homens,
         Mulheres = mulheres,
         Branca = branca,
