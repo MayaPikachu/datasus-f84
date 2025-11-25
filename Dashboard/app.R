@@ -21,12 +21,14 @@ pac <- pac %>%
   )
 
 filtro_ano_pac <- function(df, input_ano) {
-  if (is.null(input_ano)) return(df)
+  if (is.null(input_ano) || length(input_ano) == 0) return(df)
   
   df %>%
-    filter(
+    rowwise() %>%
+    filter(any(
       ano >= input_ano & ano_dt_inicio <= input_ano
-    )
+    )) %>%
+    ungroup()
 }
 
 tabela_procs <- read.csv("procedimentos_caps.csv", encoding = "UTF-8", stringsAsFactors = FALSE) 
@@ -456,12 +458,30 @@ server <- function(input, output, session) {
   ##### Demografia #####
   dados_demografia <- reactive({
     if(input$tipo_dado_dem=="Pacientes") {
-      pac %>%
+      df <- pac %>%
         filter(
           is.null(input$estado_dem) | uf %in% input$estado_dem,
           is.null(input$municipio_dem) | nome %in% input$municipio_dem
         ) %>%
         filtro_ano_pac(input$ano_dem)
+      
+      if (length(input$ano_dem) == 0) {
+        ano_ref <- NA
+      } else {
+        ano_ref <- max(input$ano_dem)   # usa o mais recente
+      }
+      
+      # --- Correção da idade somente para Pacientes ---
+      df <- df %>%
+        mutate(
+          ano = as.numeric(ano),     # ano do último registro do paciente
+          idade = as.numeric(IDADEPAC),
+          anos_passados = (ano - as.numeric(ano_ref)),
+          idade_corrigida = idade - anos_passados,
+          idade_corrigida = pmax(idade_corrigida, 0)  # evita idade negativa
+        )
+      
+      return(df)
     } else {
       at %>%
         filter(
